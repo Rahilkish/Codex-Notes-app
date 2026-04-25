@@ -1,3 +1,30 @@
+// ── Google Drive API Config ──
+const GOOGLE_CLIENT_ID = '582791233110-avlgld3637i8tcqapp5gs0aglvvehdrs.apps.googleusercontent.com';
+let driveAccessToken = null;
+
+function initGoogleAuth() {
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: 'https://www.googleapis.com/auth/drive.file',
+    callback: (response) => {
+      if (response && response.access_token) {
+        driveAccessToken = response.access_token;
+        const btn = document.getElementById('btn-connect-drive');
+        btn.textContent = 'Drive Connected ✓';
+        btn.style.background = '#0f9d58';
+        btn.disabled = true;
+      }
+    },
+  });
+  document.getElementById('btn-connect-drive').addEventListener('click', () => {
+    client.requestAccessToken();
+  });
+}
+
+window.addEventListener('load', () => {
+  if (typeof google !== 'undefined') initGoogleAuth();
+});
+
 // ── Storage ──
 const DB = {
   get: (key) => JSON.parse(localStorage.getItem(key) || '[]'),
@@ -92,7 +119,7 @@ function initSwipeDelete(rowEl, onDelete) {
 }
 
 // ── Swipe for goals — grey zone slides, releases to open sheet ──
-const GOAL_REVEAL = 110; // matches grey zone width
+const GOAL_REVEAL = 110;
 
 function initSwipeGoal(rowEl, onRelease) {
   const inner = rowEl.querySelector('.goal-swipe-inner');
@@ -114,7 +141,6 @@ function initSwipeGoal(rowEl, onRelease) {
     if (axis === 'y') return;
     e.preventDefault();
     if (mx > 0) return;
-    // clamp at GOAL_REVEAL so it doesn't slide further
     dx = Math.max(mx, -GOAL_REVEAL);
     inner.style.transform = `translateX(${dx}px)`;
   }, { passive: false });
@@ -158,13 +184,11 @@ function initLongPressDelete(el, xBtn, onDelete) {
   el.addEventListener('touchend', cancel, { passive: true });
   el.addEventListener('touchmove', cancel, { passive: true });
 
-  // clicking ✕ deletes
   xBtn.addEventListener('click', e => {
     e.stopPropagation();
     onDelete();
   });
 
-  // tap anywhere else = dismiss ✕
   document.addEventListener('touchstart', e => {
     if (!el.contains(e.target) && !xBtn.contains(e.target)) {
       el.classList.remove('long-press-active');
@@ -510,6 +534,12 @@ function initFieldNotes() {
     const notes = DB.get(KEYS.notes);
     notes.unshift({ id: uid('fn'), text, photo: pendingPhoto ?? null, audio: audioDataUrl, createdAt: Date.now() });
     DB.set(KEYS.notes, notes);
+
+    // Push text to Google Drive for Obsidian
+    if (driveAccessToken && text) {
+      uploadNoteToDrive(text, notes[0].createdAt);
+    }
+
     e.target.reset(); counter.textContent = '0 / 140';
     pendingPhoto = null; pendingAudioBlob = null; pendingAudioUrl = null;
     document.getElementById('photo-preview').classList.add('hidden');
@@ -547,7 +577,6 @@ function makeGoalItem(goal) {
   const li = document.createElement('li');
   li.className = 'goal-item'; li.dataset.goalId = goal.id;
 
-  // goal swipe row — grey zone behind
   const row = document.createElement('div'); row.className = 'goal-swipe-row';
 
   const greyZone = document.createElement('div');
@@ -555,7 +584,6 @@ function makeGoalItem(goal) {
 
   const inner = document.createElement('div'); inner.className = 'goal-swipe-inner';
 
-  // summary row
   const summary = document.createElement('div'); summary.className = 'goal-summary';
   summary.innerHTML = `
     <span class="goal-swatch" style="background:${goal.color}"></span>
@@ -566,7 +594,6 @@ function makeGoalItem(goal) {
     <span class="goal-chevron">▾</span>
   `;
 
-  // body
   const body = document.createElement('div'); body.className = 'goal-body';
   body.innerHTML = buildGoalBody(goal);
 
@@ -576,13 +603,11 @@ function makeGoalItem(goal) {
   row.appendChild(inner);
   li.appendChild(row);
 
-  // tap summary = toggle expand
   summary.addEventListener('click', () => {
     li.classList.toggle('open');
     if (li.classList.contains('open')) initGoalBodyEvents(body, goal.id, li);
   });
 
-  // swipe left = open sheet
   initSwipeGoal(row, () => openGoalSheet(goal.id));
 
   return li;
@@ -651,7 +676,6 @@ function initGoalBodyEvents(body, goalId, li) {
   if (body._eventsInited) return;
   body._eventsInited = true;
 
-  // init long-press delete on all step items and checklist items
   function bindLongPresses() {
     body.querySelectorAll('.step-item').forEach(stepEl => {
       const xBtn = stepEl.querySelector('.step-delete-x');
@@ -690,7 +714,6 @@ function initGoalBodyEvents(body, goalId, li) {
   bindLongPresses();
 
   body.addEventListener('click', e => {
-    // + Task / + List
     const addBtn = e.target.closest('.btn-add-step');
     if (addBtn) {
       const form = body.querySelector('.inline-step-form');
@@ -704,7 +727,6 @@ function initGoalBodyEvents(body, goalId, li) {
     if (e.target.closest('.confirm-inline')) submitInlineStep(body, goalId, li);
     if (e.target.closest('.cancel-inline')) body.querySelector('.inline-step-form').classList.add('hidden');
 
-    // push to tasks
     const pushBtn = e.target.closest('.btn-push');
     if (pushBtn) {
       const { goalId: gId, stepId } = pushBtn.dataset;
@@ -727,7 +749,6 @@ function initGoalBodyEvents(body, goalId, li) {
       bindLongPresses();
     }
 
-    // tick checklist item
     const checkBtn = e.target.closest('.check-item-btn');
     if (checkBtn) {
       const { goalId: gId, stepId, itemId } = checkBtn.dataset;
@@ -742,7 +763,6 @@ function initGoalBodyEvents(body, goalId, li) {
       bindLongPresses();
     }
 
-    // clear done items
     const clearBtn = e.target.closest('.btn-clear-done');
     if (clearBtn) {
       const { goalId: gId, stepId } = clearBtn.dataset;
@@ -797,11 +817,9 @@ function submitInlineStep(body, goalId, li) {
   input.value = ''; form.classList.add('hidden');
   body.querySelector('.steps-list').innerHTML = goal.steps.map(s => buildStepHtml(goal, s)).join('');
   updateGoalPreview(li, goal);
-  // re-bind long presses on new elements
   if (body._eventsInited) {
     body.querySelectorAll('.step-item').forEach(stepEl => { stepEl._lpInited = false; });
     body.querySelectorAll('.checklist-item').forEach(itemEl => { itemEl._lpInited = false; });
-    // trigger rebind via click handler's bindLongPresses — fire it manually
     const bindFn = body._bindLongPresses;
     if (bindFn) bindFn();
   }
@@ -876,3 +894,28 @@ initNav();
 initTasks(); renderTasks();
 initFieldNotes(); renderNotes();
 initCreative(); renderGoals();
+
+// ── Drive Upload Engine ──
+async function uploadNoteToDrive(text, timestamp) {
+  const d = new Date(timestamp);
+  const filename = `Playhaus_Note_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}_${d.getHours()}${d.getMinutes()}.md`;
+  
+  const content = `---\ndate: ${d.toISOString()}\ntags: [field-note, playhaus]\n---\n\n${text}`;
+
+  const metadata = new Blob([JSON.stringify({ name: filename, mimeType: 'text/markdown' })], { type: 'application/json' });
+  const media = new Blob([content], { type: 'text/markdown' });
+  const form = new FormData();
+  form.append('metadata', metadata);
+  form.append('file', media);
+
+  try {
+    await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + driveAccessToken },
+      body: form
+    });
+    console.log('Successfully pushed to Drive!');
+  } catch (err) {
+    console.error('Drive upload failed:', err);
+  }
+}
