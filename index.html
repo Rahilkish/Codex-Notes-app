@@ -7,6 +7,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>Codex</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -19,7 +20,6 @@
       <button class="nav-btn" data-view="creative">Creative Codex</button>
     </nav>
 
-    <!-- TASKS -->
     <section id="view-tasks" class="view active">
       <header class="view-header">
         <h1>Codex</h1>
@@ -38,7 +38,6 @@
       </form>
     </section>
 
-    <!-- FIELD NOTES -->
     <section id="view-field-notes" class="view hidden">
       <header class="view-header">
         <h1>Field Notes</h1>
@@ -67,6 +66,7 @@
         </div>
 
         <div class="note-actions">
+          <button type="button" id="btn-connect-drive" style="background: #4285F4; color: white; margin-right: auto; padding: 0 12px; border-radius: 4px; font-weight: bold; border: none; cursor: pointer;">Connect Drive</button>
           <label class="capture-btn" for="camera-input">Photo</label>
           <input type="file" id="camera-input" accept="image/*" capture="environment" />
           <button type="button" id="btn-record">Record</button>
@@ -77,7 +77,6 @@
       <ul id="notes-list"></ul>
     </section>
 
-    <!-- CREATIVE CODEX -->
     <section id="view-creative" class="view hidden">
       <header class="view-header">
         <h1>Creative Codex</h1>
@@ -88,7 +87,6 @@
 
   </main>
 
-  <!-- Create Goal Modal -->
   <dialog id="modal-goal">
     <form id="form-goal" method="dialog">
       <h2>New Goal</h2>
@@ -102,7 +100,6 @@
     </form>
   </dialog>
 
-  <!-- Goal Action Sheet (swipe → opens this) -->
   <div id="goal-sheet-backdrop" class="sheet-backdrop hidden"></div>
   <div id="goal-action-sheet" class="action-sheet hidden">
     <div class="sheet-handle"></div>
