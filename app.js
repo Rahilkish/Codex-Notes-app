@@ -896,27 +896,97 @@ initFieldNotes(); renderNotes();
 initCreative(); renderGoals();
 
 // ── Drive Upload Engine ──
+// ── Drive Upload Engine ──
 const DRIVE_FOLDER_ID = '1qx8jWqEXupcFjx-gbOuMvZ7qXISardnZ';
+
+// helper to upload image/audio files
+async function uploadFileToDrive(blob, filename) {
+  const metadata = {
+    name: filename,
+    parents: [DRIVE_FOLDER_ID]
+  };
+
+  const form = new FormData();
+  form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+  form.append('file', blob);
+
+  await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + driveAccessToken },
+    body: form
+  });
+
+  return filename;
+}
 
 async function uploadNoteToDrive(text, timestamp) {
   const d = new Date(timestamp);
-  
-  // Format dates to match Claude's layout (YYYY-MM-DD HH:MM)
+
   const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-  
-  // Create the filename
-const prefix = "Note"; // or "Idea", "Observation", etc.
-const filename = `${prefix} - ${safeTitle || 'Untitled'}.md`;
-  
-  // Build the content exactly like Claude's layout + your new tag
+
+  const safeTitle = text
+    .split('\n')[0]
+    .slice(0, 60)
+    .replace(/[\\/:*?"<>|]/g, '')
+    .trim();
+
+  const filename = `${safeTitle || 'Untitled'}.md`;
+
+  let imageMarkdown = '';
+  if (pendingPhoto) {
+    const blob = await (await fetch(pendingPhoto)).blob();
+    const imgName = `img_${Date.now()}.png`;
+    await uploadFileToDrive(blob, imgName);
+    imageMarkdown = `![[${imgName}]]`;
+  }
+
+  let audioMarkdown = '';
+  if (pendingAudioBlob) {
+    const audioName = `audio_${Date.now()}.webm`;
+    await uploadFileToDrive(pendingAudioBlob, audioName);
+    audioMarkdown = `![[${audioName}]]`;
+  }
+
   const content = `---
 captured: ${dateStr}
 tags: [[Field Notes]]
 ---
 
+# ${safeTitle}
 
-${text}`;
+${text}
 
+${imageMarkdown}
+
+${audioMarkdown}
+`;
+
+  const metadata = {
+    name: filename,
+    mimeType: 'text/markdown',
+    parents: [DRIVE_FOLDER_ID]
+  };
+
+  const form = new FormData();
+  form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+  form.append('file', new Blob([content], { type: 'text/markdown' }));
+
+  try {
+    const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + driveAccessToken },
+      body: form
+    });
+
+    if (!response.ok) {
+      console.error('Upload failed:', await response.text());
+    } else {
+      console.log('✅ Note uploaded correctly');
+    }
+  } catch (err) {
+    console.error('Drive error:', err);
+  }
+}
   // Build the file metadata and tell it exactly which folder to drop into
   const metadata = {
     name: filename,
