@@ -905,16 +905,14 @@ async function uploadNoteToDrive(text, timestamp) {
   const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
   
   // Create the filename
-  const filename = `Playhaus_Note_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}.md`;
+ const filename = `${safeTitle || 'Untitled'}_${dateStr.replace(/[: ]/g, '-')}.md`;
   
   // Build the content exactly like Claude's layout + your new tag
   const content = `---
 captured: ${dateStr}
-type: field-note
-tags: [capture, spark, playhaus]
+tags: [[Field Notes]]
 ---
 
-[[Field Notes]]
 
 ${text}`;
 
