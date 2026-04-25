@@ -905,7 +905,8 @@ async function uploadNoteToDrive(text, timestamp) {
   const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
   
   // Create the filename
- const filename = `${safeTitle || 'Untitled'}_${dateStr.replace(/[: ]/g, '-')}.md`;
+const prefix = "Note"; // or "Idea", "Observation", etc.
+const filename = `${prefix} - ${safeTitle || 'Untitled'}.md`;
   
   // Build the content exactly like Claude's layout + your new tag
   const content = `---
