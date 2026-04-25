@@ -896,26 +896,54 @@ initFieldNotes(); renderNotes();
 initCreative(); renderGoals();
 
 // ── Drive Upload Engine ──
+const DRIVE_FOLDER_ID = '1qx8jWqEXupcFjx-gbOuMvZ7qXISardnZ';
+
 async function uploadNoteToDrive(text, timestamp) {
   const d = new Date(timestamp);
-  const filename = `Playhaus_Note_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}_${d.getHours()}${d.getMinutes()}.md`;
   
-  const content = `---\ndate: ${d.toISOString()}\ntags: [field-note, playhaus]\n---\n\n${text}`;
+  // Format dates to match Claude's layout (YYYY-MM-DD HH:MM)
+  const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  
+  // Create the filename
+  const filename = `Playhaus_Note_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}.md`;
+  
+  // Build the content exactly like Claude's layout + your new tag
+  const content = `---
+captured: ${dateStr}
+type: field-note
+tags: [capture, spark, playhaus]
+---
 
-  const metadata = new Blob([JSON.stringify({ name: filename, mimeType: 'text/markdown' })], { type: 'application/json' });
-  const media = new Blob([content], { type: 'text/markdown' });
+[[Field Notes]]
+
+${text}`;
+
+  // Build the file metadata and tell it exactly which folder to drop into
+  const metadata = {
+    name: filename,
+    mimeType: 'text/markdown',
+    parents: [DRIVE_FOLDER_ID]
+  };
+
+  const metadataBlob = new Blob([JSON.stringify(metadata)], { type: 'application/json' });
+  const mediaBlob = new Blob([content], { type: 'text/markdown' });
   const form = new FormData();
-  form.append('metadata', metadata);
-  form.append('file', media);
+  form.append('metadata', metadataBlob);
+  form.append('file', mediaBlob);
 
   try {
-    await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+    const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + driveAccessToken },
       body: form
     });
-    console.log('Successfully pushed to Drive!');
+    
+    if (response.ok) {
+      console.log('Successfully pushed directly to the Field Notes folder!');
+    } else {
+      console.error('Upload failed:', await response.text());
+    }
   } catch (err) {
-    console.error('Drive upload failed:', err);
+    console.error('Drive upload error:', err);
   }
 }
