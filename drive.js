@@ -1,7 +1,7 @@
 // ── Google Drive / Obsidian Sync ──
 const Drive = (() => {
   const CLIENT_ID = '582791233110-avlgld3637i8tcqapp5gs0aglvvehdrs.apps.googleusercontent.com';
-  const SCOPES = 'https://www.googleapis.com/auth/drive';
+  const SCOPES = 'https://www.googleapis.com/auth/drive'; // Full access granted!
 
   // Hardcoded Obsidian folder IDs
   const FOLDER_ID = '1qx8jWqEXupcFjx-gbOuMvZ7qXISardnZ'; // Your main Field Notes folder
@@ -96,10 +96,8 @@ const Drive = (() => {
     let bodyBytes;
 
     if (mimeType === 'text/markdown') {
-      // plain text
       bodyBytes = new TextEncoder().encode(dataUrlOrText);
     } else {
-      // dataURL — strip header and decode base64
       const base64 = dataUrlOrText.split(',')[1];
       const binary = atob(base64);
       bodyBytes = new Uint8Array(binary.length);
@@ -108,7 +106,6 @@ const Drive = (() => {
       }
     }
 
-    // Step 1 — initiate resumable upload session
     const metadata = {
       name: filename,
       parents: [targetFolderId],
@@ -136,7 +133,6 @@ const Drive = (() => {
     const uploadUrl = initRes.headers.get('Location');
     if (!uploadUrl) throw new Error('No upload URL returned');
 
-    // Step 2 — upload the actual bytes
     const uploadRes = await fetch(uploadUrl, {
       method: 'PUT',
       headers: {
@@ -185,9 +181,7 @@ const Drive = (() => {
         const photoName = `${dateStr}_${timeStr}_${baseName}.${ext}`;
         const photoMime = ext === 'png' ? 'image/png' : 'image/jpeg';
         
-        // Pass MEDIA_FOLDER_ID to route the image correctly
         await uploadFile(photoName, note.photo, photoMime, MEDIA_FOLDER_ID);
-        
         md += `![[${photoName}]]\n\n`;
       }
 
@@ -197,7 +191,7 @@ const Drive = (() => {
 
       md += `---\n*Captured in Codex — expand this spark*\n`;
 
-      // Upload markdown file to main Field Notes folder
+      // Upload text file to the main Field Notes folder
       await uploadFile(`${baseName}.md`, md, 'text/markdown', FOLDER_ID);
 
       if (status) {
