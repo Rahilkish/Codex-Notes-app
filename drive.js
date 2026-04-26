@@ -1,7 +1,7 @@
 // ── Google Drive / Obsidian Sync ──
 const Drive = (() => {
   const CLIENT_ID = '582791233110-avlgld3637i8tcqapp5gs0aglvvehdrs.apps.googleusercontent.com';
-  const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+  const SCOPES = 'https://www.googleapis.com/auth/drive';
 
   // Hardcoded Obsidian folder IDs
   const FOLDER_ID = '1qx8jWqEXupcFjx-gbOuMvZ7qXISardnZ'; // Your main Field Notes folder
