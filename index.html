@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Codex</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main id="app">
+
+    <nav id="nav-bar">
+      <button class="nav-btn active" data-view="tasks">Tasks</button>
+      <button class="nav-btn" data-view="field-notes">Field Notes</button>
+      <button class="nav-btn" data-view="creative">Creative Codex</button>
+    </nav>
+
+    <!-- TASKS -->
+    <section id="view-tasks" class="view active">
+      <header class="view-header">
+        <h1>Codex</h1>
+        <button id="btn-sprint">Sprint</button>
+      </header>
+      <div id="sprint-levels" class="hidden"></div>
+      <ul id="task-list"></ul>
+      <form id="form-task">
+        <input id="input-title" type="text" placeholder="New task" maxlength="120" required />
+        <select id="input-weight">
+          <option value="light">Light</option>
+          <option value="solid" selected>Solid</option>
+          <option value="heavy">Heavy</option>
+        </select>
+        <button type="submit">Add</button>
+      </form>
+    </section>
+
+    <!-- FIELD NOTES -->
+    <section id="view-field-notes" class="view hidden">
+      <header class="view-header">
+        <h1>Field Notes</h1>
+        <div class="drive-header-right">
+          <span id="drive-status"></span>
+          <button id="btn-drive-connect">Connect to Obsidian</button>
+        </div>
+      </header>
+      <form id="form-note">
+        <textarea id="input-note" placeholder="what are you noticing right now" maxlength="140" rows="3"></textarea>
+
+        <div id="photo-preview" class="hidden">
+          <img id="preview-img" src="" alt="preview" />
+          <button type="button" id="btn-clear-photo">✕</button>
+        </div>
+
+        <div id="audio-capture-ui" class="hidden">
+          <div class="audio-capture-inner">
+            <div class="audio-bars" id="capture-bars">
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+            </div>
+            <span id="audio-status-label">Ready</span>
+            <button type="button" id="btn-play-preview" class="hidden">▶</button>
+            <button type="button" id="btn-clear-audio">✕</button>
+          </div>
+        </div>
+
+        <div class="note-actions">
+          <label class="capture-btn" for="camera-input">Photo</label>
+          <input type="file" id="camera-input" accept="image/*" capture="environment" />
+          <button type="button" id="btn-record">Record</button>
+          <button type="submit">Log it</button>
+        </div>
+        <div id="char-count">0 / 140</div>
+      </form>
+      <ul id="notes-list"></ul>
+    </section>
+
+    <!-- CREATIVE CODEX -->
+    <section id="view-creative" class="view hidden">
+      <header class="view-header">
+        <h1>Creative Codex</h1>
+        <button id="btn-add-goal">+ Goal</button>
+      </header>
+      <ul id="goals-list"></ul>
+    </section>
+
+  </main>
+
+  <!-- Create Goal Modal -->
+  <dialog id="modal-goal">
+    <form id="form-goal" method="dialog">
+      <h2>New Goal</h2>
+      <input type="text" id="input-goal-title" placeholder="Goal title" maxlength="100" required />
+      <textarea id="input-goal-desc" placeholder="Description (optional)" maxlength="300" rows="3"></textarea>
+      <label>Color thread <input type="color" id="input-goal-color" value="#c8a96e" /></label>
+      <div class="modal-actions">
+        <button type="button" id="btn-cancel-goal">Cancel</button>
+        <button type="submit">Create</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Goal Action Sheet (swipe → opens this) -->
+  <div id="goal-sheet-backdrop" class="sheet-backdrop hidden"></div>
+  <div id="goal-action-sheet" class="action-sheet hidden">
+    <div class="sheet-handle"></div>
+    <h3 id="sheet-goal-name"></h3>
+    <div class="sheet-field">
+      <label class="sheet-label">Title</label>
+      <input type="text" id="sheet-goal-title" maxlength="100" />
+    </div>
+    <div class="sheet-field">
+      <label class="sheet-label">Description</label>
+      <textarea id="sheet-goal-desc" maxlength="300" rows="3"></textarea>
+    </div>
+    <div class="sheet-field sheet-color-row">
+      <label class="sheet-label">Color thread</label>
+      <input type="color" id="sheet-goal-color" />
+    </div>
+    <button id="sheet-save-btn" class="sheet-btn-save">Save changes</button>
+    <button id="sheet-delete-btn" class="sheet-btn-delete">Delete goal</button>
+  </div>
+
+  <script src="drive.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
