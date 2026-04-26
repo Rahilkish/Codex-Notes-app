@@ -177,8 +177,8 @@ const Drive = (() => {
       
       const baseName = slug; 
 
-      // Build markdown (Date stays in the frontmatter)
-      let md = `---\ncaptured: ${d.toLocaleString('en-GB')}\ntype: field-note\ntags: [spark, capture]\n---\n\n`;
+      // ── UPDATED FRONTMATTER METADATA ──
+      let md = `---\ncaptured: ${d.toLocaleString('en-GB')}\ntype: field-note\ncollection: "[[Field Notes]]"\n---\n\n`;
       if (note.text) md += `${note.text}\n\n`;
 
       // Upload photo first if present (Correct way for Obsidian)
