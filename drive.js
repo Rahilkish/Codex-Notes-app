@@ -166,37 +166,39 @@ const Drive = (() => {
       const d = new Date(note.createdAt);
       const dateStr = d.toISOString().slice(0, 10);
       const timeStr = d.toTimeString().slice(0, 5).replace(':', '-');
+      
+      // ── UPDATED FILE NAMING ──
       const slug = (note.text || 'untitled')
         .slice(0, 40)
         .replace(/[^a-z0-9 ]/gi, '')
         .trim()
         .replace(/\s+/g, '-')
         .toLowerCase() || 'note';
-      const baseName = `${dateStr}_${timeStr}_${slug}`;
+      
+      const baseName = slug; 
 
-      // Build markdown
+      // Build markdown (Date stays in the frontmatter)
       let md = `---\ncaptured: ${d.toLocaleString('en-GB')}\ntype: field-note\ntags: [spark, capture]\n---\n\n`;
       if (note.text) md += `${note.text}\n\n`;
 
       // Upload photo first if present
       if (note.photo) {
         const ext = note.photo.startsWith('data:image/png') ? 'png' : 'jpg';
-        const photoName = `${baseName}.${ext}`;
+        // We keep the date on the image file itself so images with the same note name don't overwrite
+        const photoName = `${dateStr}_${timeStr}_${baseName}.${ext}`;
         const photoMime = ext === 'png' ? 'image/png' : 'image/jpeg';
         await uploadFile(photoName, note.photo, photoMime);
         md += `![[${photoName}]]\n\n`;
       }
 
-      // Upload audio if present
+      // ── UPDATED INLINE AUDIO ──
       if (note.audio) {
-        const audioName = `${baseName}.webm`;
-        await uploadFile(audioName, note.audio, 'audio/webm');
-        md += `[🎵 Audio note](${audioName})\n\n`;
+        md += `<audio controls src="${note.audio}"></audio>\n\n`;
       }
 
       md += `---\n*Captured in Codex — expand this spark*\n`;
 
-      // Upload markdown file
+      // Upload markdown file using the clean name
       await uploadFile(`${baseName}.md`, md, 'text/markdown');
 
       if (status) {
