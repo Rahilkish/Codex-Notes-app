@@ -201,7 +201,7 @@ button[type="submit"] {
 #char-count { font-size: 11px; color: var(--text-dim); width: 100%; }
 
 #photo-preview { width: 100%; position: relative; }
-#photo-preview img { width: 100%; max-height: 160px; object-fit: cover; }
+#photo-preview img { width: 100%; max-height: 160px; object-fit: cover; cursor: pointer; }
 #photo-preview.hidden { display: none; }
 #btn-clear-photo {
   position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.7);
@@ -252,7 +252,7 @@ button[type="submit"] {
 /* ── Field Notes List ── */
 .note-item { padding: 14px 16px; list-style: none; }
 .note-timestamp { display: block; font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; margin-bottom: 6px; }
-.note-photo { width: 100%; max-height: 200px; object-fit: cover; margin-bottom: 8px; display: block; }
+.note-photo { width: 100%; max-height: 200px; object-fit: cover; margin-bottom: 8px; display: block; cursor: pointer; }
 .note-text { line-height: 1.5; font-size: 14px; }
 .note-audio {
   display: flex; align-items: center; gap: 8px;
@@ -476,5 +476,24 @@ dialog label input[type="color"] { margin-left: 8px; height: 28px; width: 48px; 
   padding: 5px 10px; cursor: pointer; white-space: nowrap;
 }
 #btn-drive-connect.connected { border-color: var(--accent); color: var(--accent); }
+
+/* ── Image Lightbox ── */
+#image-lightbox {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.95);
+  z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+#lightbox-img {
+  max-width: 100%; max-height: 100%; object-fit: contain;
+  border-radius: 8px;
+}
+#lightbox-close {
+  position: absolute; top: 20px; right: 20px;
+  background: rgba(0,0,0,0.5); border: none; color: #fff;
+  font-size: 20px; padding: 10px; cursor: pointer; border-radius: 50%;
+  width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+}
 
 .hidden { display: none !important; }
