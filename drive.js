@@ -1,11 +1,11 @@
 // ── Google Drive / Obsidian Sync ──
 const Drive = (() => {
   const CLIENT_ID = '582791233110-avlgld3637i8tcqapp5gs0aglvvehdrs.apps.googleusercontent.com';
-  const SCOPES = 'https://drive.google.com/drive/folders/1kfRpU-oo9mqJ9aK0XtnZKGw8672XfY3n?usp=drive_link';
+  const SCOPES = 'https://www.googleapis.com/auth/drive.file';
 
   // Hardcoded Obsidian folder IDs
   const FOLDER_ID = '1qx8jWqEXupcFjx-gbOuMvZ7qXISardnZ'; // Your main Field Notes folder
-  const MEDIA_FOLDER_ID = 'PASTE_YOUR_MEDIA_FOLDER_ID_HERE'; // Put your new Media folder ID here
+  const MEDIA_FOLDER_ID = '1kfRpU-oo9mqJ9aKOXtnZKGw8672XfY3n'; // Your Media folder
 
   let accessToken = null;
   let tokenClient = null;
@@ -92,7 +92,6 @@ const Drive = (() => {
   }
 
   // ── Upload any file using fetch + resumable upload ──
-  // Added a targetFolderId parameter so we can tell it where to go
   async function uploadFile(filename, dataUrlOrText, mimeType, targetFolderId) {
     let bodyBytes;
 
@@ -186,7 +185,7 @@ const Drive = (() => {
         const photoName = `${dateStr}_${timeStr}_${baseName}.${ext}`;
         const photoMime = ext === 'png' ? 'image/png' : 'image/jpeg';
         
-        // Pass MEDIA_FOLDER_ID instead of FOLDER_ID
+        // Pass MEDIA_FOLDER_ID to route the image correctly
         await uploadFile(photoName, note.photo, photoMime, MEDIA_FOLDER_ID);
         
         md += `![[${photoName}]]\n\n`;
