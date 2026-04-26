@@ -164,8 +164,6 @@ const Drive = (() => {
       if (status) status.textContent = '↑ Sending…';
 
       const d = new Date(note.createdAt);
-      const dateStr = d.toISOString().slice(0, 10);
-      const timeStr = d.toTimeString().slice(0, 5).replace(':', '-');
       
       // ── UPDATED FILE NAMING ──
       const slug = (note.text || 'untitled')
@@ -181,14 +179,10 @@ const Drive = (() => {
       let md = `---\ncaptured: ${d.toLocaleString('en-GB')}\ntype: field-note\ntags: [spark, capture]\n---\n\n`;
       if (note.text) md += `${note.text}\n\n`;
 
-      // Upload photo first if present
+      // ── UPDATED INLINE PHOTO ──
+      // Embed photo directly as Base64 (No separate file upload)
       if (note.photo) {
-        const ext = note.photo.startsWith('data:image/png') ? 'png' : 'jpg';
-        // We keep the date on the image file itself so images with the same note name don't overwrite
-        const photoName = `${dateStr}_${timeStr}_${baseName}.${ext}`;
-        const photoMime = ext === 'png' ? 'image/png' : 'image/jpeg';
-        await uploadFile(photoName, note.photo, photoMime);
-        md += `![[${photoName}]]\n\n`;
+        md += `![Captured Photo](${note.photo})\n\n`;
       }
 
       // ── UPDATED INLINE AUDIO ──
