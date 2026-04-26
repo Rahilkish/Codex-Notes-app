@@ -19,7 +19,6 @@
       <button class="nav-btn" data-view="creative">Creative Codex</button>
     </nav>
 
-    <!-- TASKS -->
     <section id="view-tasks" class="view active">
       <header class="view-header">
         <h1>Codex</h1>
@@ -38,7 +37,6 @@
       </form>
     </section>
 
-    <!-- FIELD NOTES -->
     <section id="view-field-notes" class="view hidden">
       <header class="view-header">
         <h1>Field Notes</h1>
@@ -81,7 +79,6 @@
       <ul id="notes-list"></ul>
     </section>
 
-    <!-- CREATIVE CODEX -->
     <section id="view-creative" class="view hidden">
       <header class="view-header">
         <h1>Creative Codex</h1>
@@ -92,7 +89,6 @@
 
   </main>
 
-  <!-- Create Goal Modal -->
   <dialog id="modal-goal">
     <form id="form-goal" method="dialog">
       <h2>New Goal</h2>
@@ -106,7 +102,6 @@
     </form>
   </dialog>
 
-  <!-- Goal Action Sheet (swipe → opens this) -->
   <div id="goal-sheet-backdrop" class="sheet-backdrop hidden"></div>
   <div id="goal-action-sheet" class="action-sheet hidden">
     <div class="sheet-handle"></div>
@@ -125,6 +120,11 @@
     </div>
     <button id="sheet-save-btn" class="sheet-btn-save">Save changes</button>
     <button id="sheet-delete-btn" class="sheet-btn-delete">Delete goal</button>
+  </div>
+
+  <div id="image-lightbox" class="hidden">
+    <button id="lightbox-close">✕</button>
+    <img id="lightbox-img" src="" alt="Full view" />
   </div>
 
   <script src="drive.js"></script>
