@@ -426,7 +426,7 @@ function initFieldNotes() {
   const counter = document.getElementById('char-count');
   textarea.addEventListener('input', () => { counter.textContent = `${textarea.value.length} / 140`; });
 
-  // ── UPDATED PHOTO CAPTURE WITH RESIZING ──
+  // ── PHOTO CAPTURE WITH RESIZING ──
   document.getElementById('camera-input').addEventListener('change', e => {
     const file = e.target.files[0]; if (!file) return;
 
@@ -462,7 +462,6 @@ function initFieldNotes() {
     };
     reader.readAsDataURL(file);
   });
-  // ──────────────────────────────────────────
 
   document.getElementById('btn-clear-photo').addEventListener('click', () => {
     pendingPhoto = null;
@@ -900,12 +899,48 @@ function initCreative() {
   initGoalSheet();
 }
 
+// ── Image Lightbox ──
+function initLightbox() {
+  const lightbox = document.getElementById('image-lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const closeBtn = document.getElementById('lightbox-close');
+
+  const openLightbox = (src) => {
+    if (!src) return;
+    lightboxImg.src = src;
+    lightbox.classList.remove('hidden');
+  };
+
+  const closeLightbox = () => {
+    lightbox.classList.add('hidden');
+    setTimeout(() => { lightboxImg.src = ''; }, 200); // clear after CSS transition
+  };
+
+  // Close on clicking X or the dark background
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox || e.target === closeBtn) closeLightbox();
+  });
+
+  // Open pending photo preview
+  document.getElementById('preview-img').addEventListener('click', (e) => {
+    openLightbox(e.target.src);
+  });
+
+  // Open saved notes photos using event delegation
+  document.getElementById('notes-list').addEventListener('click', (e) => {
+    if (e.target.classList.contains('note-photo')) {
+      openLightbox(e.target.src);
+    }
+  });
+}
+
 // ── Boot ──
 runDecay();
 initNav();
 initTasks(); renderTasks();
 initFieldNotes(); renderNotes();
 initCreative(); renderGoals();
+initLightbox();
 
 // Drive — init after DOM ready
 Drive.init();
