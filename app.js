@@ -426,16 +426,44 @@ function initFieldNotes() {
   const counter = document.getElementById('char-count');
   textarea.addEventListener('input', () => { counter.textContent = `${textarea.value.length} / 140`; });
 
+  // ── UPDATED PHOTO CAPTURE WITH RESIZING ──
   document.getElementById('camera-input').addEventListener('change', e => {
     const file = e.target.files[0]; if (!file) return;
+
+    // Loading state
+    const submitBtn = document.querySelector('#form-note button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Processing...';
+    submitBtn.disabled = true;
+
     const reader = new FileReader();
     reader.onload = ev => {
-      pendingPhoto = ev.target.result;
-      document.getElementById('preview-img').src = pendingPhoto;
-      document.getElementById('photo-preview').classList.remove('hidden');
+      // Downsize image to prevent localStorage crash
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 1200; // Keeps quality high but size low
+        const scaleSize = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        pendingPhoto = canvas.toDataURL('image/jpeg', 0.8);
+        document.getElementById('preview-img').src = pendingPhoto;
+        document.getElementById('photo-preview').classList.remove('hidden');
+
+        // Restore button
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      };
+      img.src = ev.target.result;
     };
     reader.readAsDataURL(file);
   });
+  // ──────────────────────────────────────────
+
   document.getElementById('btn-clear-photo').addEventListener('click', () => {
     pendingPhoto = null;
     document.getElementById('photo-preview').classList.add('hidden');
