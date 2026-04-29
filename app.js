@@ -943,60 +943,74 @@ function initOnboarding() {
   screen.classList.remove('hidden');
 
   let current = 0;
-  const slides = document.querySelectorAll('.onboarding-slide');
+  const slides = Array.from(document.querySelectorAll('.onboarding-slide'));
   const dots = document.querySelectorAll('.dot');
   const backBtn = document.getElementById('btn-onboarding-back');
   const total = slides.length;
 
-  function goTo(idx, direction) {
-    const exitClass = direction === 'back' ? 'exit-right' : 'exit';
+  // Set initial state — all hidden except first
+  slides.forEach((s, i) => {
+    s.style.transition = 'none';
+    s.style.position = 'absolute';
+    s.style.width = '100%';
+    s.style.opacity = i === 0 ? '1' : '0';
+    s.style.transform = i === 0 ? 'translateX(0)' : 'translateX(40px)';
+    s.style.pointerEvents = i === 0 ? 'all' : 'none';
+  });
 
-    // exit current slide
-    slides[current].classList.remove('active');
-    slides[current].classList.add(exitClass);
-    setTimeout(() => slides[current].classList.remove(exitClass), 350);
-
-    // position incoming slide off-screen in the correct direction BEFORE showing it
+  function goTo(idx) {
+    if (idx === current) return;
+    const direction = idx > current ? 1 : -1;
+    const outgoing = slides[current];
     const incoming = slides[idx];
-    incoming.style.transition = 'none';
-    incoming.style.transform = direction === 'back' ? 'translateX(-40px)' : 'translateX(40px)';
-    incoming.style.opacity = '0';
 
-    // force reflow so the starting position is applied before transition kicks in
+    // Position incoming slide off-screen in the correct direction
+    incoming.style.transition = 'none';
+    incoming.style.opacity = '0';
+    incoming.style.transform = `translateX(${direction * 60}px)`;
+    incoming.style.pointerEvents = 'none';
+
+    // Force reflow
     incoming.getBoundingClientRect();
 
-    // now animate in
-    incoming.style.transition = '';
-    incoming.style.transform = '';
-    incoming.style.opacity = '';
-    incoming.classList.add('active');
+    // Animate both slides
+    const t = 'opacity 0.3s ease, transform 0.3s ease';
+    outgoing.style.transition = t;
+    incoming.style.transition = t;
+
+    outgoing.style.opacity = '0';
+    outgoing.style.transform = `translateX(${-direction * 60}px)`;
+    outgoing.style.pointerEvents = 'none';
+
+    incoming.style.opacity = '1';
+    incoming.style.transform = 'translateX(0)';
+    incoming.style.pointerEvents = 'all';
 
     current = idx;
     dots.forEach(d => d.classList.toggle('active', +d.dataset.dot === current));
     backBtn.classList.toggle('hidden', current === 0);
   }
 
-  // tap slide to advance
+  // Tap slide area to go forward
   document.getElementById('onboarding-slides').addEventListener('click', () => {
-    if (current < total - 1) goTo(current + 1, 'forward');
+    if (current < total - 1) goTo(current + 1);
   });
 
-  // back button
+  // Back button
   backBtn.addEventListener('click', e => {
     e.stopPropagation();
-    if (current > 0) goTo(current - 1, 'back');
+    if (current > 0) goTo(current - 1);
   });
 
-  // dot navigation
+  // Dot navigation
   dots.forEach(dot => {
     dot.addEventListener('click', e => {
       e.stopPropagation();
-      const target = +dot.dataset.dot;
-      goTo(target, target < current ? 'back' : 'forward');
+      goTo(+dot.dataset.dot);
     });
   });
 
-  // start button
+  // Start button
   document.getElementById('btn-onboarding-start').addEventListener('click', e => {
     e.stopPropagation();
     localStorage.setItem('codex_onboarded', '1');
