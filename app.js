@@ -934,6 +934,65 @@ function initLightbox() {
   });
 }
 
+// ── Onboarding ──
+function initOnboarding() {
+  const seen = localStorage.getItem('codex_onboarded');
+  if (seen) return; // already seen, skip
+
+  const screen = document.getElementById('onboarding');
+  screen.classList.remove('hidden');
+
+  let current = 0;
+  const slides = document.querySelectorAll('.onboarding-slide');
+  const dots = document.querySelectorAll('.dot');
+  const total = slides.length;
+
+  function goTo(idx) {
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit');
+    setTimeout(() => slides[current].classList.remove('exit'), 350);
+    current = idx;
+    slides[current].classList.add('active');
+    dots.forEach(d => d.classList.toggle('active', +d.dataset.dot === current));
+  }
+
+  // tap anywhere on slide to advance
+  document.getElementById('onboarding-slides').addEventListener('click', () => {
+    if (current < total - 1) goTo(current + 1);
+  });
+
+  // dot navigation
+  dots.forEach(dot => {
+    dot.addEventListener('click', e => {
+      e.stopPropagation();
+      goTo(+dot.dataset.dot);
+    });
+  });
+
+  // start button
+  document.getElementById('btn-onboarding-start').addEventListener('click', e => {
+    e.stopPropagation();
+    localStorage.setItem('codex_onboarded', '1');
+    screen.style.opacity = '0';
+    screen.style.transition = 'opacity 0.4s ease';
+    setTimeout(() => screen.classList.add('hidden'), 400);
+  });
+}
+
+// ── Credits ──
+function initCredits() {
+  const overlay = document.getElementById('credits-overlay');
+  document.getElementById('btn-about').addEventListener('click', () => {
+    overlay.classList.remove('hidden');
+  });
+  document.getElementById('btn-credits-close').addEventListener('click', () => {
+    overlay.classList.add('hidden');
+  });
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.add('hidden');
+  });
+}
+
 // ── Boot ──
 runDecay();
 initNav();
@@ -941,6 +1000,8 @@ initTasks(); renderTasks();
 initFieldNotes(); renderNotes();
 initCreative(); renderGoals();
 initLightbox();
+initOnboarding();
+initCredits();
 
 // Drive — init after DOM ready
 Drive.init();
