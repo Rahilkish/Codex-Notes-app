@@ -937,7 +937,7 @@ function initLightbox() {
 // ── Onboarding ──
 function initOnboarding() {
   const seen = localStorage.getItem('codex_onboarded');
-  if (seen) return; // already seen, skip
+  if (seen) return;
 
   const screen = document.getElementById('onboarding');
   screen.classList.remove('hidden');
@@ -945,27 +945,37 @@ function initOnboarding() {
   let current = 0;
   const slides = document.querySelectorAll('.onboarding-slide');
   const dots = document.querySelectorAll('.dot');
+  const backBtn = document.getElementById('btn-onboarding-back');
   const total = slides.length;
 
-  function goTo(idx) {
+  function goTo(idx, direction) {
+    const exitClass = direction === 'back' ? 'exit-right' : 'exit';
     slides[current].classList.remove('active');
-    slides[current].classList.add('exit');
-    setTimeout(() => slides[current].classList.remove('exit'), 350);
+    slides[current].classList.add(exitClass);
+    setTimeout(() => slides[current].classList.remove(exitClass), 350);
     current = idx;
     slides[current].classList.add('active');
     dots.forEach(d => d.classList.toggle('active', +d.dataset.dot === current));
+    backBtn.classList.toggle('hidden', current === 0);
   }
 
-  // tap anywhere on slide to advance
+  // tap slide to advance
   document.getElementById('onboarding-slides').addEventListener('click', () => {
-    if (current < total - 1) goTo(current + 1);
+    if (current < total - 1) goTo(current + 1, 'forward');
+  });
+
+  // back button
+  backBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (current > 0) goTo(current - 1, 'back');
   });
 
   // dot navigation
   dots.forEach(dot => {
     dot.addEventListener('click', e => {
       e.stopPropagation();
-      goTo(+dot.dataset.dot);
+      const target = +dot.dataset.dot;
+      goTo(target, target < current ? 'back' : 'forward');
     });
   });
 
