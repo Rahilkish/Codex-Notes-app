@@ -497,3 +497,135 @@ dialog label input[type="color"] { margin-left: 8px; height: 28px; width: 48px; 
 }
 
 .hidden { display: none !important; }
+/* ── About button in nav ── */
+#btn-about {
+  background: none; border: none; color: var(--text-dim);
+  font-size: 20px; padding: 0 14px; cursor: pointer; line-height: 1;
+  flex-shrink: 0;
+}
+
+/* ── Onboarding ── */
+#onboarding {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+}
+#onboarding.hidden { display: none; }
+
+#onboarding-inner {
+  width: 100%; max-width: 480px;
+  height: 100dvh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 32px 32px;
+}
+
+#onboarding-wordmark {
+  font-size: 13px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 48px;
+}
+
+#onboarding-slides {
+  flex: 1; width: 100%;
+  display: flex; align-items: center;
+  overflow: hidden; position: relative;
+}
+
+.onboarding-slide {
+  position: absolute; width: 100%;
+  opacity: 0; transform: translateX(40px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+  text-align: center;
+}
+.onboarding-slide.active {
+  opacity: 1; transform: translateX(0);
+  pointer-events: all;
+}
+.onboarding-slide.exit {
+  opacity: 0; transform: translateX(-40px);
+}
+
+.slide-icon {
+  font-size: 32px; color: var(--accent);
+  margin-bottom: 24px; display: block;
+}
+
+.onboarding-slide h2 {
+  font-size: 20px; font-weight: 400;
+  letter-spacing: 0.02em; margin-bottom: 16px;
+  color: var(--text);
+}
+
+.onboarding-slide p {
+  font-size: 13px; line-height: 1.8;
+  color: var(--text-dim); max-width: 300px; margin: 0 auto 32px;
+}
+
+#btn-onboarding-start {
+  background: none; border: 1px solid var(--accent);
+  color: var(--accent); font-family: inherit;
+  font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase;
+  padding: 12px 32px; cursor: pointer; margin-top: 8px;
+}
+
+#onboarding-dots {
+  display: flex; gap: 8px; margin-bottom: 24px;
+}
+.dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--border); cursor: pointer;
+  transition: background 0.2s;
+}
+.dot.active { background: var(--accent); }
+
+#onboarding-credit {
+  font-size: 10px; letter-spacing: 0.12em;
+  color: var(--text-dim); text-transform: uppercase;
+}
+
+/* ── Credits overlay ── */
+#credits-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 150;
+  display: flex; align-items: center; justify-content: center;
+}
+#credits-overlay.hidden { display: none; }
+
+#credits-inner {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 32px 28px; width: 90%; max-width: 320px;
+  text-align: center;
+}
+
+.credits-wordmark {
+  font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 6px;
+}
+.credits-version {
+  font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; margin-bottom: 20px;
+}
+.credits-desc {
+  font-size: 12px; line-height: 1.7; color: var(--text-dim); margin-bottom: 20px;
+}
+.credits-divider {
+  width: 32px; height: 1px; background: var(--border); margin: 0 auto 20px;
+}
+.credits-name {
+  font-size: 12px; line-height: 1.8; color: var(--text-dim); margin-bottom: 12px;
+}
+.credits-name strong { color: var(--text); font-weight: 400; }
+.credits-stack {
+  font-size: 10px; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 8px;
+}
+.credits-philosophy {
+  font-size: 10px; letter-spacing: 0.1em; color: var(--accent);
+  text-transform: uppercase; margin-bottom: 24px;
+}
+#btn-credits-close {
+  background: none; border: 1px solid var(--border); color: var(--text-dim);
+  font-family: inherit; font-size: 11px; letter-spacing: 0.1em;
+  padding: 8px 24px; cursor: pointer;
+}
