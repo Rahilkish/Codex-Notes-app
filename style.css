@@ -546,6 +546,9 @@ dialog label input[type="color"] { margin-left: 8px; height: 28px; width: 48px; 
 .onboarding-slide.exit {
   opacity: 0; transform: translateX(-40px);
 }
+.onboarding-slide.exit-right {
+  opacity: 0; transform: translateX(40px);
+}
 
 .slide-icon {
   font-size: 32px; color: var(--accent);
@@ -569,6 +572,17 @@ dialog label input[type="color"] { margin-left: 8px; height: 28px; width: 48px; 
   font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase;
   padding: 12px 32px; cursor: pointer; margin-top: 8px;
 }
+
+#onboarding-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  width: 100%; margin-bottom: 16px; min-height: 28px;
+}
+#btn-onboarding-back {
+  background: none; border: none; color: var(--text-dim);
+  font-family: inherit; font-size: 11px; letter-spacing: 0.1em;
+  cursor: pointer; padding: 4px 0;
+}
+#btn-onboarding-back.hidden { visibility: hidden; pointer-events: none; }
 
 #onboarding-dots {
   display: flex; gap: 8px; margin-bottom: 24px;
