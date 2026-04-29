@@ -533,22 +533,12 @@ dialog label input[type="color"] { margin-left: 8px; height: 28px; width: 48px; 
 }
 
 .onboarding-slide {
-  position: absolute; width: 100%;
-  opacity: 0; transform: translateX(40px);
-  transition: opacity 0.35s ease, transform 0.35s ease;
-  pointer-events: none;
+  position: absolute;
+  width: 100%;
   text-align: center;
+  /* opacity and transform controlled entirely by JS */
 }
-.onboarding-slide.active {
-  opacity: 1; transform: translateX(0);
-  pointer-events: all;
-}
-.onboarding-slide.exit {
-  opacity: 0; transform: translateX(-40px);
-}
-.onboarding-slide.exit-right {
-  opacity: 0; transform: translateX(40px);
-}
+.onboarding-slide.active { /* kept for any legacy references */ }
 
 .slide-icon {
   font-size: 32px; color: var(--accent);
