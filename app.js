@@ -950,11 +950,28 @@ function initOnboarding() {
 
   function goTo(idx, direction) {
     const exitClass = direction === 'back' ? 'exit-right' : 'exit';
+
+    // exit current slide
     slides[current].classList.remove('active');
     slides[current].classList.add(exitClass);
     setTimeout(() => slides[current].classList.remove(exitClass), 350);
+
+    // position incoming slide off-screen in the correct direction BEFORE showing it
+    const incoming = slides[idx];
+    incoming.style.transition = 'none';
+    incoming.style.transform = direction === 'back' ? 'translateX(-40px)' : 'translateX(40px)';
+    incoming.style.opacity = '0';
+
+    // force reflow so the starting position is applied before transition kicks in
+    incoming.getBoundingClientRect();
+
+    // now animate in
+    incoming.style.transition = '';
+    incoming.style.transform = '';
+    incoming.style.opacity = '';
+    incoming.classList.add('active');
+
     current = idx;
-    slides[current].classList.add('active');
     dots.forEach(d => d.classList.toggle('active', +d.dataset.dot === current));
     backBtn.classList.toggle('hidden', current === 0);
   }
