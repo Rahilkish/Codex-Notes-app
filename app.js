@@ -940,6 +940,21 @@ function initLightbox() {
   });
 }
 
+// ── Credits ──
+function initCredits() {
+  const overlay = document.getElementById('credits-overlay');
+  if (!overlay) return;
+  document.getElementById('btn-about').addEventListener('click', () => {
+    overlay.classList.remove('hidden');
+  });
+  document.getElementById('btn-credits-close').addEventListener('click', () => {
+    overlay.classList.add('hidden');
+  });
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.add('hidden');
+  });
+}
+
 // ── Boot ──
 runDecay();
 initNav();
@@ -947,6 +962,8 @@ initTasks(); renderTasks();
 initFieldNotes(); renderNotes();
 initCreative(); renderGoals();
 initLightbox();
+initOnboarding();
+initCredits();
 
 // Drive — init after DOM ready
 Drive.init();
