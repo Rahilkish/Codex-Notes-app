@@ -540,3 +540,21 @@ dialog label input[type="color"] { margin-left: 8px; height: 28px; width: 48px; 
   justify-content: center;
 }
 #btn-about:active { color: var(--accent); }
+
+/* ── About dot button fix ── */
+#btn-about {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 22px;
+  line-height: 1;
+  padding: 0 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#btn-about:active { color: var(--accent); }
