@@ -125,32 +125,8 @@ html, body {
   display: flex; align-items: flex-start; gap: 12px;
   padding: 14px 16px; list-style: none;
 }
-.task-item[data-decay="aging"] {
-  opacity: 0.5;
-}
-.task-item[data-decay="aging"] .task-title {
-  color: #888;
-}
-.task-item[data-decay="aging"] .task-weight {
-  text-decoration: line-through;
-  opacity: 0.5;
-}
-.task-item[data-decay="old"] {
-  opacity: 0.25;
-}
-.task-item[data-decay="old"] .task-title {
-  color: #666;
-  text-decoration: line-through;
-  text-decoration-color: #444;
-}
-.task-item[data-decay="old"] .task-weight {
-  text-decoration: line-through;
-  opacity: 0.4;
-}
-.task-item[data-decay="old"] .task-check {
-  border-color: #333;
-  opacity: 0.4;
-}
+.task-item[data-decay="aging"] { opacity: 0.55; }
+.task-item[data-decay="old"] { opacity: 0.25; }
 
 .task-check {
   width: 18px; height: 18px; border: 1px solid var(--border);
@@ -521,89 +497,150 @@ dialog label input[type="color"] { margin-left: 8px; height: 28px; width: 48px; 
 }
 
 .hidden { display: none !important; }
-/* ── About button ── */
-#btn-about {
-  background: none;
-  border: none;
-  color: var(--text-dim);
-  font-family: inherit;
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 0 12px;
-  cursor: pointer;
-  flex-shrink: 0;
-  min-width: 44px;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-#btn-about:active { color: var(--accent); }
+/* ═══════════════════════════════════════════
+   DESKTOP LAYOUT — fires above 768px
+   Mobile layout below is completely unchanged
+═══════════════════════════════════════════ */
 
-/* ── About dot button fix ── */
-#btn-about {
-  background: none;
-  border: none;
-  color: var(--text-dim);
-  font-size: 22px;
-  line-height: 1;
-  padding: 0 12px;
-  cursor: pointer;
-  flex-shrink: 0;
-  min-width: 44px;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-#btn-about:active { color: var(--accent); }
+@media (min-width: 768px) {
 
-/* ── Credits overlay ── */
-#credits-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.88);
-  z-index: 150;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-#credits-overlay.hidden { display: none; }
+  html, body { font-size: 14px; }
 
-#credits-inner {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 32px 28px;
-  width: 90%;
-  max-width: 320px;
-  text-align: center;
-}
-.credits-wordmark {
-  font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
-  color: var(--accent); margin-bottom: 6px;
-}
-.credits-version {
-  font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; margin-bottom: 20px;
-}
-.credits-desc {
-  font-size: 12px; line-height: 1.7; color: var(--text-dim); margin-bottom: 20px;
-}
-.credits-divider {
-  width: 32px; height: 1px; background: var(--border); margin: 0 auto 20px;
-}
-.credits-name {
-  font-size: 12px; line-height: 1.8; color: var(--text-dim); margin-bottom: 12px;
-}
-.credits-name strong { color: var(--text); font-weight: 400; }
-.credits-stack {
-  font-size: 10px; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 8px;
-}
-.credits-philosophy {
-  font-size: 10px; letter-spacing: 0.1em; color: var(--accent);
-  text-transform: uppercase; margin-bottom: 24px;
-}
-#btn-credits-close {
-  background: none; border: 1px solid var(--border); color: var(--text-dim);
-  font-family: inherit; font-size: 11px; letter-spacing: 0.1em;
-  padding: 8px 24px; cursor: pointer;
+  #app {
+    max-width: 100%;
+    height: 100dvh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas:
+      "nav nav nav"
+      "tasks notes creative";
+  }
+
+  /* ── Desktop Nav ── */
+  #nav-bar {
+    grid-area: nav;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-btn {
+    flex: 0;
+    padding: 16px 20px;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    pointer-events: none; /* tabs don't switch on desktop — all visible */
+    color: var(--text-dim);
+    border-bottom: none;
+  }
+
+  /* all views always visible on desktop */
+  .view {
+    display: flex !important;
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+    height: 100%;
+  }
+
+  .view.hidden { display: flex !important; }
+
+  #view-tasks    { grid-area: tasks; }
+  #view-field-notes { grid-area: notes; }
+  #view-creative { grid-area: creative; border-right: none; }
+
+  /* ── Desktop column headers ── */
+  .view-header {
+    padding: 20px 20px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .view-header h1 {
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 400;
+  }
+
+  /* ── Scrollable areas fill column ── */
+  #task-list, #notes-list, #goals-list {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  /* ── Sprint levels on desktop ── */
+  #sprint-levels {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  /* ── Forms sit at bottom of each column ── */
+  #form-task, #form-note {
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── Nav about button pushed to right ── */
+  #btn-about {
+    margin-left: auto;
+  }
+
+  /* ── Nav active state hidden on desktop (all tabs visible) ── */
+  .nav-btn.active {
+    border-bottom: none;
+    color: var(--text-dim);
+  }
+
+  /* ── Completed tray ── */
+  #completed-tray {
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  /* ── Drive connect button ── */
+  .drive-header-right {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ── Goal action sheet — centred on desktop ── */
+  .action-sheet {
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 480px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  /* ── Onboarding — centred card on desktop ── */
+  #onboarding-inner {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* ── Credits — centred on desktop ── */
+  #credits-inner {
+    max-width: 360px;
+  }
+
+  /* ── Scrollbar styling for desktop ── */
+  #task-list::-webkit-scrollbar,
+  #notes-list::-webkit-scrollbar,
+  #goals-list::-webkit-scrollbar {
+    width: 4px;
+  }
+  #task-list::-webkit-scrollbar-track,
+  #notes-list::-webkit-scrollbar-track,
+  #goals-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  #task-list::-webkit-scrollbar-thumb,
+  #notes-list::-webkit-scrollbar-thumb,
+  #goals-list::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 2px;
+  }
+
 }
