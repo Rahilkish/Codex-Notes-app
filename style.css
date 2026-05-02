@@ -496,6 +496,24 @@ dialog label input[type="color"] { margin-left: 8px; height: 28px; width: 48px; 
   width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
 }
 
+/* ── About button — base (mobile + desktop) ── */
+#btn-about {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 22px;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+#btn-about:active { color: var(--accent); }
+
 .hidden { display: none !important; }
 /* ═══════════════════════════════════════════
    DESKTOP LAYOUT — fires above 768px
@@ -583,9 +601,6 @@ dialog label input[type="color"] { margin-left: 8px; height: 28px; width: 48px; 
   }
 
   /* ── Nav about button pushed to right ── */
-  #btn-about {
-    margin-left: auto;
-  }
 
   /* ── Nav active state hidden on desktop (all tabs visible) ── */
   .nav-btn.active {
