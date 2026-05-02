@@ -68,10 +68,12 @@ function initSwipeDelete(rowEl, onDelete) {
   }, { passive: false });
 
   inner.addEventListener('touchend', () => {
-    if (!active || axis !== 'x') { active = false; return; }
+    if (!active) return;
     active = false;
     inner.style.transition = 'transform 0.22s ease';
-    if (Math.abs(dx) >= DELETE_THRESHOLD) {
+
+    // always snap back unless it was a full delete swipe
+    if (axis === 'x' && Math.abs(dx) >= DELETE_THRESHOLD) {
       inner.style.transform = 'translateX(-110%)';
       rowEl.style.transition = 'max-height 0.28s ease, opacity 0.28s ease';
       rowEl.style.overflow = 'hidden';
@@ -79,14 +81,18 @@ function initSwipeDelete(rowEl, onDelete) {
       requestAnimationFrame(() => { rowEl.style.maxHeight = '0'; rowEl.style.opacity = '0'; });
       setTimeout(onDelete, 320);
     } else {
+      // snap back in all other cases — partial swipe, vertical swipe, anything
       inner.style.transform = 'translateX(0)';
+      dx = 0;
     }
   });
 
+  // also snap back if user touches anywhere else on screen
   document.addEventListener('touchstart', e => {
     if (!rowEl.contains(e.target)) {
       inner.style.transition = 'transform 0.22s ease';
       inner.style.transform = 'translateX(0)';
+      dx = 0;
     }
   }, { passive: true });
 }
@@ -934,106 +940,6 @@ function initLightbox() {
   });
 }
 
-// ── Onboarding ──
-function initOnboarding() {
-  const seen = localStorage.getItem('codex_onboarded');
-  if (seen) return;
-
-  const screen = document.getElementById('onboarding');
-  screen.classList.remove('hidden');
-
-  let current = 0;
-  const slides = Array.from(document.querySelectorAll('.onboarding-slide'));
-  const dots = document.querySelectorAll('.dot');
-  const backBtn = document.getElementById('btn-onboarding-back');
-  const total = slides.length;
-
-  // Set initial state — all hidden except first
-  slides.forEach((s, i) => {
-    s.style.transition = 'none';
-    s.style.position = 'absolute';
-    s.style.width = '100%';
-    s.style.opacity = i === 0 ? '1' : '0';
-    s.style.transform = i === 0 ? 'translateX(0)' : 'translateX(40px)';
-    s.style.pointerEvents = i === 0 ? 'all' : 'none';
-  });
-
-  function goTo(idx) {
-    if (idx === current) return;
-    const direction = idx > current ? 1 : -1;
-    const outgoing = slides[current];
-    const incoming = slides[idx];
-
-    // Position incoming slide off-screen in the correct direction
-    incoming.style.transition = 'none';
-    incoming.style.opacity = '0';
-    incoming.style.transform = `translateX(${direction * 60}px)`;
-    incoming.style.pointerEvents = 'none';
-
-    // Force reflow
-    incoming.getBoundingClientRect();
-
-    // Animate both slides
-    const t = 'opacity 0.3s ease, transform 0.3s ease';
-    outgoing.style.transition = t;
-    incoming.style.transition = t;
-
-    outgoing.style.opacity = '0';
-    outgoing.style.transform = `translateX(${-direction * 60}px)`;
-    outgoing.style.pointerEvents = 'none';
-
-    incoming.style.opacity = '1';
-    incoming.style.transform = 'translateX(0)';
-    incoming.style.pointerEvents = 'all';
-
-    current = idx;
-    dots.forEach(d => d.classList.toggle('active', +d.dataset.dot === current));
-    backBtn.classList.toggle('hidden', current === 0);
-  }
-
-  // Tap slide area to go forward
-  document.getElementById('onboarding-slides').addEventListener('click', () => {
-    if (current < total - 1) goTo(current + 1);
-  });
-
-  // Back button
-  backBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    if (current > 0) goTo(current - 1);
-  });
-
-  // Dot navigation
-  dots.forEach(dot => {
-    dot.addEventListener('click', e => {
-      e.stopPropagation();
-      goTo(+dot.dataset.dot);
-    });
-  });
-
-  // Start button
-  document.getElementById('btn-onboarding-start').addEventListener('click', e => {
-    e.stopPropagation();
-    localStorage.setItem('codex_onboarded', '1');
-    screen.style.opacity = '0';
-    screen.style.transition = 'opacity 0.4s ease';
-    setTimeout(() => screen.classList.add('hidden'), 400);
-  });
-}
-
-// ── Credits ──
-function initCredits() {
-  const overlay = document.getElementById('credits-overlay');
-  document.getElementById('btn-about').addEventListener('click', () => {
-    overlay.classList.remove('hidden');
-  });
-  document.getElementById('btn-credits-close').addEventListener('click', () => {
-    overlay.classList.add('hidden');
-  });
-  overlay.addEventListener('click', e => {
-    if (e.target === overlay) overlay.classList.add('hidden');
-  });
-}
-
 // ── Boot ──
 runDecay();
 initNav();
@@ -1041,8 +947,6 @@ initTasks(); renderTasks();
 initFieldNotes(); renderNotes();
 initCreative(); renderGoals();
 initLightbox();
-initOnboarding();
-initCredits();
 
 // Drive — init after DOM ready
 Drive.init();
