@@ -521,3 +521,22 @@ dialog label input[type="color"] { margin-left: 8px; height: 28px; width: 48px; 
 }
 
 .hidden { display: none !important; }
+/* ── About button ── */
+#btn-about {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#btn-about:active { color: var(--accent); }
