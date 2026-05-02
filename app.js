@@ -175,8 +175,10 @@ function initLongPressDelete(el, xBtn, onDelete) {
 
 // ── Nav ──
 function initNav() {
+  const isDesktop = () => window.innerWidth >= 768;
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+      if (isDesktop()) return; // all columns visible on desktop, no switching needed
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.view').forEach(v => { v.classList.add('hidden'); v.classList.remove('active'); });
       btn.classList.add('active');
@@ -941,13 +943,11 @@ function initOnboarding() {
   const screen = document.getElementById('onboarding');
   if (!screen) return;
   screen.classList.remove('hidden');
-
   let current = 0;
   const slides = Array.from(document.querySelectorAll('.onboarding-slide'));
   const dots = document.querySelectorAll('.dot');
   const backBtn = document.getElementById('btn-onboarding-back');
   const total = slides.length;
-
   slides.forEach((s, i) => {
     s.style.transition = 'none';
     s.style.position = 'absolute';
@@ -956,7 +956,6 @@ function initOnboarding() {
     s.style.transform = i === 0 ? 'translateX(0)' : 'translateX(40px)';
     s.style.pointerEvents = i === 0 ? 'all' : 'none';
   });
-
   function goTo(idx) {
     if (idx === current) return;
     const direction = idx > current ? 1 : -1;
@@ -968,33 +967,24 @@ function initOnboarding() {
     incoming.style.pointerEvents = 'none';
     incoming.getBoundingClientRect();
     const t = 'opacity 0.3s ease, transform 0.3s ease';
-    outgoing.style.transition = t;
-    incoming.style.transition = t;
-    outgoing.style.opacity = '0';
-    outgoing.style.transform = `translateX(${-direction * 60}px)`;
+    outgoing.style.transition = t; incoming.style.transition = t;
+    outgoing.style.opacity = '0'; outgoing.style.transform = `translateX(${-direction * 60}px)`;
     outgoing.style.pointerEvents = 'none';
-    incoming.style.opacity = '1';
-    incoming.style.transform = 'translateX(0)';
+    incoming.style.opacity = '1'; incoming.style.transform = 'translateX(0)';
     incoming.style.pointerEvents = 'all';
     current = idx;
     dots.forEach(d => d.classList.toggle('active', +d.dataset.dot === current));
     if (backBtn) backBtn.classList.toggle('hidden', current === 0);
   }
-
   document.getElementById('onboarding-slides').addEventListener('click', () => {
     if (current < total - 1) goTo(current + 1);
   });
-  if (backBtn) {
-    backBtn.addEventListener('click', e => { e.stopPropagation(); if (current > 0) goTo(current - 1); });
-  }
-  dots.forEach(dot => {
-    dot.addEventListener('click', e => { e.stopPropagation(); goTo(+dot.dataset.dot); });
-  });
+  if (backBtn) backBtn.addEventListener('click', e => { e.stopPropagation(); if (current > 0) goTo(current - 1); });
+  dots.forEach(dot => dot.addEventListener('click', e => { e.stopPropagation(); goTo(+dot.dataset.dot); }));
   document.getElementById('btn-onboarding-start').addEventListener('click', e => {
     e.stopPropagation();
     localStorage.setItem('codex_onboarded', '1');
-    screen.style.opacity = '0';
-    screen.style.transition = 'opacity 0.4s ease';
+    screen.style.opacity = '0'; screen.style.transition = 'opacity 0.4s ease';
     setTimeout(() => screen.classList.add('hidden'), 400);
   });
 }
@@ -1020,7 +1010,7 @@ initLightbox();
 initOnboarding();
 initCredits();
 
-// Drive — init after DOM ready
+// Drive
 Drive.init();
 document.getElementById('btn-drive-connect').addEventListener('click', () => {
   if (Drive.isConnected()) Drive.disconnect();
