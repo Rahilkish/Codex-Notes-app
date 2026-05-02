@@ -558,3 +558,52 @@ dialog label input[type="color"] { margin-left: 8px; height: 28px; width: 48px; 
   justify-content: center;
 }
 #btn-about:active { color: var(--accent); }
+
+/* ── Credits overlay ── */
+#credits-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#credits-overlay.hidden { display: none; }
+
+#credits-inner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 32px 28px;
+  width: 90%;
+  max-width: 320px;
+  text-align: center;
+}
+.credits-wordmark {
+  font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 6px;
+}
+.credits-version {
+  font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; margin-bottom: 20px;
+}
+.credits-desc {
+  font-size: 12px; line-height: 1.7; color: var(--text-dim); margin-bottom: 20px;
+}
+.credits-divider {
+  width: 32px; height: 1px; background: var(--border); margin: 0 auto 20px;
+}
+.credits-name {
+  font-size: 12px; line-height: 1.8; color: var(--text-dim); margin-bottom: 12px;
+}
+.credits-name strong { color: var(--text); font-weight: 400; }
+.credits-stack {
+  font-size: 10px; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 8px;
+}
+.credits-philosophy {
+  font-size: 10px; letter-spacing: 0.1em; color: var(--accent);
+  text-transform: uppercase; margin-bottom: 24px;
+}
+#btn-credits-close {
+  background: none; border: 1px solid var(--border); color: var(--text-dim);
+  font-family: inherit; font-size: 11px; letter-spacing: 0.1em;
+  padding: 8px 24px; cursor: pointer;
+}
